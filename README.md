@@ -39,8 +39,8 @@ pip install -r requirements.txt
 First create a `.env` file with the following values:
 
 ```bash
-VALID_SENDER_IDS="sender_id_1,sender_id_2,..."
-BOT_TOKEN="your-bot-token"
+VALID_SENDER_IDS="sender_id_1,sender_id_2,..."  # telegram user IDs to which the bot replies
+BOT_TOKEN="your-bot-token"  # Telgram bot token (from BotFather)
 ```
 
 The run with:
