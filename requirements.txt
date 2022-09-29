@@ -1,0 +1,9 @@
+black~=22.3.0
+coloredlogs
+ffmpeg-python
+git+https://github.com/openai/whisper.git
+mypy-extensions~=0.4.3
+pre-commit~=2.20.0
+pyTelegramBotAPI
+rich
+sox
