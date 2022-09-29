@@ -12,11 +12,14 @@ import requests
 import telebot
 import whisper
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
+from dotenv import load_dotenv
 
-VALID_SENDER_IDS = [132556090]
-BOT_TOKEN = "5191934564:AAG7gnBaxLRi_g_GOkKAbvKZVH7MATD17hs"
+load_dotenv()
+logger = logging.getLogger(__name__)
+
+
+VALID_SENDER_IDS = []
+BOT_TOKEN = ""
 VALID_MODELS = ["tiny", "base", "small", "medium", "large"]
 
 
@@ -139,6 +142,12 @@ def get_args():
 
 def main():
     args = get_args()
+
+    global VALID_SENDER_IDS
+    global BOT_TOKEN
+
+    VALID_SENDER_IDS = [int(sid) for sid in os.getenv("VALID_SENDER_IDS").split(",")]
+    BOT_TOKEN = os.getenv("BOT_TOKEN")
 
     coloredlogs.install(logger=logger, level=args.log_level)
 
