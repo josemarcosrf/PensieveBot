@@ -38,9 +38,12 @@ pip install -r requirements.txt
 
 First create a `.env` file with the following values:
 
+```bash
 VALID_SENDER_IDS="sender_id_1,sender_id_2,..."
 BOT_TOKEN="your-bot-token"
+```
 
+The run with:
 ```bash
 # Run the bot with the 'small' whisper model
 python pensieve_bot.py -m small -v INFO
