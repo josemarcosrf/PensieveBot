@@ -111,9 +111,7 @@ def run_telebot(bot, whisperer):
             ),
         )
 
-    @bot.message_handler(
-        func=is_known_user,
-    )
+    @bot.message_handler(func=is_known_user)
     def ack(message):
         logger.debug(f"Message from: {message.from_user.id}")
         logger.debug(f"Text: {message.text}")
@@ -122,6 +120,13 @@ def run_telebot(bot, whisperer):
     @bot.message_handler(func=is_known_user, content_types=["audio", "voice"])
     def handle_audio(message):
         handle_audio_message(bot, whisperer, message)
+
+    @bot.message_handler(func=is_known_user, content_types=["video_note", "video"])
+    def handle_audio(message):
+        bot.reply_to(
+            message,
+            "😖 Sorry. Transcribing from videos and video notes is not implemented yet."
+        )
 
     # Run polling
     bot.infinity_polling()
