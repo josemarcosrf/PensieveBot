@@ -27,6 +27,8 @@ readme-toc:
 	# https://github.com/ekalinin/github-markdown-toc
 	gh-md-toc --insert README.md
 
+.ONESHELL:
 tag:
-	git tag $$tag
+	source .venv/bin/activate
+	git tag $$( python -c "from src.version import __version__; print(__version__)" )
 	git push --tags
