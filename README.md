@@ -9,6 +9,8 @@ The ASR model exploration can be found in this
 and in particular this implementation is based on
 [OpenAI's whisper model](https://github.com/openai/whisper)
 
+The bot integration uses [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
+
 
 ## ToC
 
