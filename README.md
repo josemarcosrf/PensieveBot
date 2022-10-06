@@ -46,5 +46,5 @@ BOT_TOKEN="your-bot-token"  # Telgram bot token (from BotFather)
 The run with:
 ```bash
 # Run the bot with the 'small' whisper model
-python pensieve_bot.py -m small -v INFO
+python -m src.run -m small -v INFO
 ```
