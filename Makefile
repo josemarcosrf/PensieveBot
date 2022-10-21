@@ -1,5 +1,6 @@
 .PHONY: clean readme-toc tag
 
+SHELL = bash
 JOBS ?= 1
 
 help:
@@ -22,6 +23,11 @@ clean:
 	rm -rf docs/_build
 	# rm -rf *egg-info
 	# rm -rf pip-wheel-metadata
+
+.ONESHELL:
+run:
+	source .venv/bin/activate
+	python -m src.run -m medium -v INFO
 
 readme-toc:
 	# https://github.com/ekalinin/github-markdown-toc
