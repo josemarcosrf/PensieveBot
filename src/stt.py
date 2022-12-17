@@ -1,11 +1,7 @@
-import logging
-
 import whisper
+from loguru import logger
 
 from src.constants import VALID_WHISPER_MODELS
-
-
-logger = logging.getLogger(__name__)
 
 
 class Whisperer:

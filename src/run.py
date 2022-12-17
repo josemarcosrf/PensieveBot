@@ -1,10 +1,10 @@
 import argparse
 import os
+import sys
 
-import coloredlogs
 from dotenv import load_dotenv
+from loguru import logger
 
-from src import logger
 from src.constants import VALID_WHISPER_MODELS
 from src.stt import Whisperer
 from src.tbot import TelegramBot
@@ -34,7 +34,8 @@ def main():
     VALID_SENDER_IDS = [int(sid) for sid in os.getenv("VALID_SENDER_IDS").split(",")]
     BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-    coloredlogs.install(logger=logger, level=args.log_level)
+    logger.remove()
+    logger.add(sys.stderr, level=args.log_level)
 
     logger.info("🤫 Initializing Whisper model...")
     whisperer = Whisperer(args.model)
