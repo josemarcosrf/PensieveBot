@@ -1,17 +1,15 @@
 import datetime as dt
-import logging
 import re
 import tempfile
 from typing import List
 
 import requests
 import telebot
+from loguru import logger
 
 from src import break_path
 from src import create_process
 from src.stt import Whisperer
-
-logger = logging.getLogger(__name__)
 
 
 class TelegramBot:
@@ -48,12 +46,35 @@ class TelegramBot:
                 if isinstance(transcript, list):
                     transcript = "\n".join(transcript)
 
-                text = f"**{now}**\n\n" + transcript
+                text = transcript.strip()
                 text = re.sub("hashtag ", "#", text, flags=re.IGNORECASE)
+                text = re.sub("^slash ", "/", text, flags=re.IGNORECASE)
+                text = f"**{now}**\n\n" + text
 
             return text
+
         except Exception as e:
             raise RuntimeError(f"Error while transcribing media: {e}")
+
+    def reply_or_edit(self, message, text):
+        re_flags = re.MULTILINE | re.IGNORECASE
+        if message.json.get("reply_to_message"):
+            if re.search("^/append", text, flags=re_flags):
+                text = (
+                    message.reply_to_message.text
+                    + "\n"
+                    + re.sub("^/append ", "", text, flags=re_flags)
+                )
+
+            # Update the message which the user replied to
+            text = re.sub("^/edit ", "", text, flags=re_flags) + " (edited)"
+            self.bot.edit_message_text(
+                text,
+                message.chat.id,
+                message.reply_to_message.message_id,
+            )
+        else:
+            self.bot.reply_to(message, text)
 
     def handle_audio_message(self, message: telebot.types.Message):
         try:
@@ -74,7 +95,9 @@ class TelegramBot:
 
             # Delete ack message and send transcript as a reply
             self.bot.delete_message(message.chat.id, ack_reply.id)
-            self.bot.reply_to(message, text)
+            # Post a new transcription message or edit a past one
+            self.reply_or_edit(message, text)
+
         except Exception as e:
             print(f"🚨 Error! {e}")
             self.bot.reply_to(message, f"🚨 Error! {e}")
@@ -101,7 +124,8 @@ class TelegramBot:
 
             # Delete ack message and send transcript as a reply
             self.bot.delete_message(message.chat.id, ack_reply.id)
-            self.bot.reply_to(message, text)
+            # Post a new transcription message or edit a past one
+            self.reply_or_edit(message, text)
 
         except Exception as e:
             print(f"🚨 Error! {e}")
@@ -131,7 +155,7 @@ class TelegramBot:
                 message,
                 (
                     "Hey, let's start. What are your thoughts? "
-                    "You can send voice clips and I will transcribe for you"
+                    "You can send voice or video clips and I will transcribe for you"
                 ),
             )
 
@@ -148,7 +172,7 @@ class TelegramBot:
         @self.bot.message_handler(
             func=is_known_user, content_types=["video_note", "video"]
         )
-        def handle_audio(message):
+        def handle_video(message):
             self.handle_video_message(message)
 
     def run(self):

@@ -1,12 +1,9 @@
-import logging
 import os
 from subprocess import PIPE
 from subprocess import Popen
 from typing import Tuple
 
 from src.version import __version__  # noqa
-
-logger = logging.getLogger(__name__)
 
 
 def create_process(cmd):
