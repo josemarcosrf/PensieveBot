@@ -29,6 +29,13 @@ run:
 	source .venv/bin/activate
 	python -m src.run -m medium -v INFO
 
+
+.ONESHELL:
+format:
+	source .venv/bin/activate
+	black src/
+
+
 readme-toc:
 	# https://github.com/ekalinin/github-markdown-toc
 	gh-md-toc --insert README.md

@@ -7,12 +7,23 @@ from typing import List
 import requests
 import telebot
 
+# from telebot.types import InlineKeyboardMarkup, KeyboardButton
+from telebot.util import quick_markup
 from src import break_path
 from src import create_process
 from src.stt import Whisperer
 
 logger = logging.getLogger(__name__)
 
+
+TYPING_ACTION = "typing"
+
+
+
+transcription_keyboard = quick_markup({
+    'Press me': {'callback_data': 'press'},
+    'Press me too': {'callback_data': 'press_too'}
+})
 
 class TelegramBot:
     def __init__(
@@ -58,7 +69,10 @@ class TelegramBot:
     def handle_audio_message(self, message: telebot.types.Message):
         try:
             if message.content_type == "voice":
-                tmp_reply = f"👂 Received a {message.voice.duration}s voice note. Transcribing..."
+                tmp_reply = (
+                    f"👂 Received a {message.voice.duration}s voice note. "
+                    "Transcribing..."
+                )
                 logger.info(tmp_reply)
                 ack_reply = self.bot.send_message(message.chat.id, tmp_reply)
                 file_info = self.bot.get_file(message.voice.file_id)
@@ -70,11 +84,12 @@ class TelegramBot:
                 ack_reply = self.bot.send_message(message.chat.id, tmp_reply)
                 file_info = self.bot.get_file(message.audio.file_id)
 
+            self.bot.send_chat_action(message.chat.id, TYPING_ACTION)
             text = self._convert_and_transcribe(file_info)
 
             # Delete ack message and send transcript as a reply
             self.bot.delete_message(message.chat.id, ack_reply.id)
-            self.bot.reply_to(message, text)
+            self.bot.reply_to(message, text, reply_markup=transcription_keyboard)
         except Exception as e:
             print(f"🚨 Error! {e}")
             self.bot.reply_to(message, f"🚨 Error! {e}")
@@ -97,6 +112,7 @@ class TelegramBot:
                 ack_reply = self.bot.send_message(message.chat.id, tmp_reply)
                 file_info = self.bot.get_file(message.video.file_id)
 
+            self.bot.send_chat_action(message.chat.id, TYPING_ACTION)
             text = self._convert_and_transcribe(file_info)
 
             # Delete ack message and send transcript as a reply
@@ -123,10 +139,12 @@ class TelegramBot:
             logger.warning(
                 f"Received message from un-known user: {message.from_user.id}"
             )
+            self.bot.send_chat_action(message.chat.id, TYPING_ACTION)
             self.bot.reply_to(message, "We are not friends...Sorry 👋🏻")
 
         @self.bot.message_handler(func=is_known_user, commands=["start", "help"])
         def send_welcome(message):
+            self.bot.send_chat_action(message.chat.id, TYPING_ACTION)
             self.bot.reply_to(
                 message,
                 (
@@ -139,7 +157,7 @@ class TelegramBot:
         def ack(message):
             logger.debug(f"Message from: {message.from_user.id}")
             logger.debug(f"Text: {message.text}")
-            self.bot.reply_to(message, "✅")
+            self.bot.reply_to(message, "Got you! ✅", reply_markup=transcription_keyboard)
 
         @self.bot.message_handler(func=is_known_user, content_types=["audio", "voice"])
         def handle_audio(message):
@@ -148,8 +166,10 @@ class TelegramBot:
         @self.bot.message_handler(
             func=is_known_user, content_types=["video_note", "video"]
         )
-        def handle_audio(message):
+        def handle_video(message):
             self.handle_video_message(message)
+
+
 
     def run(self):
         # Run polling
