@@ -1,6 +1,6 @@
-import argparse
 import os
 
+import click
 import coloredlogs
 from dotenv import load_dotenv
 
@@ -12,38 +12,37 @@ from src.tbot import TelegramBot
 load_dotenv()
 
 
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-m", "--model", default="medium", choices=VALID_WHISPER_MODELS)
-    parser.add_argument(
-        "-v",
-        "--log-level",
-        default="INFO",
-        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-    )
-
-    return parser.parse_args()
-
-
-def main():
-    args = get_args()
-
+@click.command("run")
+@click.option("-m", "--model_path", default=None)
+@click.option(
+    "-s", "--model_size", default=None, type=click.Choice(VALID_WHISPER_MODELS)
+)
+@click.option(
+    "-v",
+    "--log-level",
+    default="INFO",
+    type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR"]),
+)
+def main(model_path, model_size, log_level):
     global VALID_SENDER_IDS
     global BOT_TOKEN
 
     VALID_SENDER_IDS = [int(sid) for sid in os.getenv("VALID_SENDER_IDS").split(",")]
     BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-    coloredlogs.install(logger=logger, level=args.log_level)
+    coloredlogs.install(logger=logger, level=log_level)
 
-    logger.info("🤫 Initializing Whisper model...")
-    whisperer = Whisperer(args.model)
+    try:
+        logger.info("🤫 Initializing Whisper model...")
+        whisperer = Whisperer(model_path=model_path, model_size=model_size)
 
-    logger.info("🤖 Initializing Telegram bot...")
-    bot = TelegramBot(BOT_TOKEN, VALID_SENDER_IDS, whisperer)
+        logger.info("🤖 Initializing Telegram bot...")
+        bot = TelegramBot(BOT_TOKEN, VALID_SENDER_IDS, whisperer)
 
-    logger.info("🏃🏻 Running...")
-    bot.run()
+        logger.info("🏃🏻 Running...")
+        bot.run()
+    except Exception as e:
+        logger.exception(f"💥 {e}")
 
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ clean:
 .ONESHELL:
 run:
 	source .venv/bin/activate
-	python -m src.run -m medium -v INFO
+	python -m src.run -s medium -v INFO
 
 readme-toc:
 	# https://github.com/ekalinin/github-markdown-toc
