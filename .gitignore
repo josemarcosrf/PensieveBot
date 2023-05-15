@@ -1,5 +1,8 @@
 .venv/
 .mypy_cache/
 
+models/
+data/
+
 *.pyc
 .env

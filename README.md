@@ -4,12 +4,16 @@ This is a simple Telegram bot which takes voice clips and responds with the
 transcription.
 Meant to be my personal [pensieve](https://harrypotter.fandom.com/wiki/Pensieve)-bot.
 
-The ASR model exploration can be found in this
+> ℹ️ The ASR model exploration can be found in this
 [STT-exploratory gist](https://gist.github.com/jmrf/9d84e77fc180996198d8a93258904a9f)
-and in particular this implementation is based on
+
+> 🔮 This implementation is based on
 [OpenAI's whisper model](https://github.com/openai/whisper)
 
-The bot integration uses [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
+> ☝️ The bot integration uses [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
+
+> ☝️ This branch uses [whisper-cpp](https://github.com/ggerganov/whisper.cpp) to run in CPU
+> via [whisper-cpp-python](https://github.com/carloscdias/whisper-cpp-python)
 
 
 ## ToC
