@@ -31,7 +31,11 @@ def main():
     global VALID_SENDER_IDS
     global BOT_TOKEN
 
-    VALID_SENDER_IDS = [int(sid) for sid in os.getenv("VALID_SENDER_IDS").split(",")]
+    VALID_SENDER_IDS = [
+        int(sid)
+        for sid in os.getenv("VALID_SENDER_IDS").split(",")
+        if sid
+    ]
     BOT_TOKEN = os.getenv("BOT_TOKEN")
 
     logger.remove()
